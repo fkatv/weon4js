@@ -20,8 +20,10 @@ wn = new Wn()
 
 const traduceWeon = (frase) => { // frase = "una frase con alguna weá aweoná"
   let T = wn.translate(L, lang="es") // spanish translate
-  console.log(T)
-  return T
+  console.log(T) //arreglo: [frase_corregida, traducción_frase]
+  let frase_corregida = T[0]
+  let traduccion = T[1]
+  return traduccion
 }
 
 // ...

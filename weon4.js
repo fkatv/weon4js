@@ -2,6 +2,7 @@ export default class Wn {
 
     constructor() {
         this.trad = ""
+        this.points = [',',';',"'",":"]
         this._pwn = ['webe', 'weón', 'weon', 'aweo', 'wéa','wéas', 'weá','weás']
         this.conjugaciones = ['yo me ', 'tú te ', 'el se ', 'nosotros nos ', 'ellos se ', 'voh (te) ']
         this.presente_simple = ['o','as / ai' ,'a', 'amos', 'an', 'ai']
@@ -34,6 +35,7 @@ export default class Wn {
         return ret
 
     } lexicParser(L) {
+      L = L.replace('wn', 'weon')
       var _L = L.split(' ')
       for (let i = 0; i < this.len(_L); i++) {
           let x = _L[i]
@@ -56,9 +58,9 @@ export default class Wn {
           }
           _L[i] = x
       }
-      L = _L.join(' ')
 
-        // L = L.replace('ebia','ebe')
+      L = _L.join(' ') + " "
+      L = L.replace(',', ' ,')
         L = L.toLowerCase()
         L = L.replace('ahueon', 'aweon')
         L = L.replace('agueon', 'aweon')
@@ -88,7 +90,6 @@ export default class Wn {
         if (this.len(L) === 3 && 'wea' === L)
           return "weá"
 
-
         return L
 
     } F_split(L, P) {
@@ -99,6 +100,7 @@ export default class Wn {
           let ip = L.indexOf(p)
           if (ip>-1){
               let Ftemp  = L.slice(0,ip)
+              Ftemp = Ftemp.replace(',', ' ,')
               F.push(Ftemp)
               L = L.slice(ip+this.len(p))
           }
@@ -106,13 +108,14 @@ export default class Wn {
       }
       F.push(L)
 
-      // console.log('F=',F)
       return F
     } rho(L) {
         let R = []
         let particulas = this._pwn
-        L.split(' ').map((x, i) => {
-            x = this.borraPuntuacion(x)
+        let Lsplit = L.split(' ')
+        console.log(Lsplit)
+        Lsplit.map((x, i) => {
+            console.log(x)
             if (this.len(x)>=3) {
                 if(this.len(x) === 3 && this.includeIn(x,  particulas ) ) {
                     R.push(x)
@@ -127,12 +130,8 @@ export default class Wn {
         return R
 
     } borraPuntuacion(x) {
-        // return re.sub('[^a-záóíA-Z0-9]+', '', x)
-        let ret = x
-        try{
-          ret = x.replace(/^[a-zA-Záóí]$/g, '');
-        }catch(err){}
-        return ret
+        // por ahora dejaremos esto sin cambios.
+        return x
 
     } esFraseNula(f) {
         f.map(x => {
@@ -146,14 +145,12 @@ export default class Wn {
         let O = []
         for (let i=0; i < d ; i++){
             let y_translate = await this.deschilenizar(U[i],P[i])
-            // console.log(i,U[i],P[i],y_translate)
             O.push(y_translate)
         }
         return O
 
     } articulate(F, Omega) {
         let trad = F[0]
-        // |F|>|O|>1
         for (let i=0; i< this.len(Omega); i++){
             let y = Omega[i]
             if (y!=null)
@@ -169,23 +166,20 @@ export default class Wn {
     } setTrad(trad){
         this.trad = trad
     } async translate(_lambda, lang = "es") {
+
         let L = this.lexicParser(_lambda)
         let K = L.split(".")
         this.setTrad('')
         for (let i = 0; i<this.len(K); i++) {
             let kappa = K[i]
-            // console.log(kappa)
             let trad = this.trad
             let Pk = await this.rho(kappa)
             if (this.len(Pk) === 0) {
                 trad = this.trad + kappa
             } else {
                 let Fk = await this.F_split(kappa, Pk)
-                // console.log(Fk)
                 let Uk = await this.getUpsilon(Fk,Pk)
-                //// console.log(Uk)
                 let Ok = await this.getOmega(Uk, Pk, this.len(Pk))
-                // console.log('omega > ',Ok)
                 let Ck = await this.articulate(Fk,Ok)
                 Ck.replace(/^\w/, (c) => c.toUpperCase()); //capitalize in js
                 trad = this.trad + Ck + "."
@@ -193,24 +187,19 @@ export default class Wn {
             this.setTrad(trad)
         }
         let translated = this.trad
-        // console.log('!"#"#$#/',translated)
-        // to_translate = trad
-        // translated = GoogleTranslator(source='auto', target=lang).translate(to_translate)
-        return translated
+        L = L.replace(' ,',',')
+        translated = translated.replace(' ,',',')
+        translated = translated.replace(' .','.')
+        return [L, translated]
 
     } translateAndAnalize(_lambda) {
-        /*text = this.translate(_lambda, 'en')
-        a = this.getAnalysis(text)
-        // console.log(text, a)
-        return [text, a]
-        */
+
     } getUpsilon(F, P) {
         let U = []
         for (let index = 0; index < this.len(P); index++){
             let pwn = P[index]
             let f = F[index]
             let u = this.Upsilon(f, pwn)
-            // // console.log(f,pwn , u)
             U.push(u)
         }
         return U
@@ -218,7 +207,6 @@ export default class Wn {
     } Upsilon(F, pwn) {
         let upsilon = []
         let f = F.split(' ')
-        // f = [this.borraPuntuacion(x) for this.includeIn(x,  f]
         f = f.map(x => this.borraPuntuacion(x))
         f = f.reverse()
 
@@ -256,7 +244,7 @@ export default class Wn {
             u = u + v[min]
         }
 
-        // console.log('  u = ', u)
+        console.log('  u = ', u, pwn)
         return u
 
     } primerPronombre(f) {
@@ -378,7 +366,6 @@ export default class Wn {
 
     } deschilenizar(u,p) {
         u = u.toString()
-        // console.log(u)
         if ( p === "weá") {
             if (u === [1, 0, 0, 0, 0].toString() )
                 return "#10000weá"
@@ -526,9 +513,9 @@ export default class Wn {
             if (u === [1, 0, 0, 1, 1].toString() )
                 return "malnacidos"
             if (u === [1, 0, 0, 2, 0].toString() )
-                return ",subnormal"
+                return "subnormal"
             if (u === [1, 0, 0, 2, 1].toString() )
-                return ",subnormales"
+                return "subnormales"
             if (u === [1, 0, 0, 3, 0].toString() )
                 return "tontona"
             if (u === [1, 0, 0, 3, 1].toString() )
@@ -650,9 +637,8 @@ export default class Wn {
                 return "#00131wéa"
         }
         if ( p === "weón") {
-          // console.log(u)
-          if (u.toString() === [ 1, 0, 0, 2, 0 ].toString() )
-              return "tipejo"
+            if (u.toString() === [ 1, 0, 0, 2, 0 ].toString() )
+                return "tipejo"
             if (u === [1, 0, 0, 0, 0].toString() )
                 return "bobo"
             if (u === [1, 0, 0, 0, 1].toString() )
@@ -689,7 +675,7 @@ export default class Wn {
             if (u === [1, 0, 0, 2, 1].toString() )
                 return "amiga"
             if (u === [1, 0, 0, 3, 0].toString() )
-                return "niña!"
+                return "niña"
             if (u === [1, 0, 0, 3, 1].toString() )
                 return "lesas"
 
