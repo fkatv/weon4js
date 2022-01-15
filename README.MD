@@ -6,6 +6,8 @@ Weon4JS es un módulo que traduce frases chilenas con weón y derivados, según 
 
 La clase **Wn** de *Weon4JS* se emplea para traducir las frases con partículas de weón. Por ahora, el módulo no distingue más modismos chilenos.
 
+Hay una versión online de este traductor, lo encuentras [acá](https://interpretaweon.web.app/)
+
 Si deseas aprender a entender weón, puedes consultar el [siguiente enlace](https://github.com/fkatv/pyweon/tree/master/learn)
 
 Si deseas ver la versión de este traductor de español chileno en Python, puedes visitarlo [acá!](https://github.com/fkatv/pyweon)
