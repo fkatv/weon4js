@@ -61,6 +61,8 @@ export default class Wn {
 
       L = _L.join(' ') + " "
       L = L.replace(',', ' ,')
+
+        // L = L.replace('ebia','ebe')
         L = L.toLowerCase()
         L = L.replace('ahueon', 'aweon')
         L = L.replace('agueon', 'aweon')
@@ -108,6 +110,7 @@ export default class Wn {
       }
       F.push(L)
 
+      // console.log('F=',F)
       return F
     } rho(L) {
         let R = []
@@ -130,7 +133,16 @@ export default class Wn {
         return R
 
     } borraPuntuacion(x) {
+        /*try{
+          x = x.replace(/^[0-9a-zá-úA-Z]+$/, '');
+        }catch(err){}
+        */
         // por ahora dejaremos esto sin cambios.
+        /*let tx = this.len(x)
+        let comma = ret[tx - 1]
+        if (this.includeIn(comma, this.points) ) {
+          return [ret.slice(0, tx-1), comma]
+        }*/
         return x
 
     } esFraseNula(f) {
@@ -145,12 +157,14 @@ export default class Wn {
         let O = []
         for (let i=0; i < d ; i++){
             let y_translate = await this.deschilenizar(U[i],P[i])
+            // console.log(i,U[i],P[i],y_translate)
             O.push(y_translate)
         }
         return O
 
     } articulate(F, Omega) {
         let trad = F[0]
+        // |F|>|O|>1
         for (let i=0; i< this.len(Omega); i++){
             let y = Omega[i]
             if (y!=null)
@@ -172,34 +186,46 @@ export default class Wn {
         this.setTrad('')
         for (let i = 0; i<this.len(K); i++) {
             let kappa = K[i]
+            // console.log(kappa)
             let trad = this.trad
             let Pk = await this.rho(kappa)
             if (this.len(Pk) === 0) {
                 trad = this.trad + kappa
             } else {
                 let Fk = await this.F_split(kappa, Pk)
+                // console.log(Fk)
                 let Uk = await this.getUpsilon(Fk,Pk)
+                //// console.log(Uk)
                 let Ok = await this.getOmega(Uk, Pk, this.len(Pk))
+                // console.log('omega > ',Ok)
                 let Ck = await this.articulate(Fk,Ok)
                 Ck.replace(/^\w/, (c) => c.toUpperCase()); //capitalize in js
                 trad = this.trad + Ck + "."
             }
+            trad = trad.replace(' ,',',')
+            trad = trad.replace(' .','.')
             this.setTrad(trad)
         }
         let translated = this.trad
+        // console.log('!"#"#$#/',translated)
+        // to_translate = trad
+        // translated = GoogleTranslator(source='auto', target=lang).translate(to_translate)
         L = L.replace(' ,',',')
-        translated = translated.replace(' ,',',')
-        translated = translated.replace(' .','.')
         return [L, translated]
 
     } translateAndAnalize(_lambda) {
-
+        /*text = this.translate(_lambda, 'en')
+        a = this.getAnalysis(text)
+        // console.log(text, a)
+        return [text, a]
+        */
     } getUpsilon(F, P) {
         let U = []
         for (let index = 0; index < this.len(P); index++){
             let pwn = P[index]
             let f = F[index]
             let u = this.Upsilon(f, pwn)
+            // // console.log(f,pwn , u)
             U.push(u)
         }
         return U
@@ -207,6 +233,7 @@ export default class Wn {
     } Upsilon(F, pwn) {
         let upsilon = []
         let f = F.split(' ')
+        // f = [this.borraPuntuacion(x) for this.includeIn(x,  f]
         f = f.map(x => this.borraPuntuacion(x))
         f = f.reverse()
 
@@ -366,6 +393,7 @@ export default class Wn {
 
     } deschilenizar(u,p) {
         u = u.toString()
+        // console.log(u)
         if ( p === "weá") {
             if (u === [1, 0, 0, 0, 0].toString() )
                 return "#10000weá"
